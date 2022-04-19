@@ -1,0 +1,202 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<title>Hostel Students</title>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link th:href="@{/css/signIn.css}" rel="stylesheet">
+<script src='https://kit.fontawesome.com/a076d05399.js'
+	crossorigin='anonymous'>
+	
+</script>
+</head>
+<body>
+
+	<script>
+	/* Below function used to add student using ajax through modal view*/
+		function add(student) {
+			var msg = "Added";
+			$.ajax({
+				type : "POST",
+				url : "./student/add",
+				data : {
+					name : $("#toAddBookName").val(),
+					standard : $("#toAddAuthor").val(),
+					mobileNo : $("#toAddYear").val(),
+					email : $("#toAddEmail").val()
+				},
+				success : function(data) {
+					$("#messageModalOpener").click();
+					setInterval(function() {
+						window.location.href = "./student";
+					}, 1000);
+				},
+				fail : function(data) {
+					console.log("fail", data);
+				}
+			});
+
+		}
+
+		/* Below function used for pagination */
+		function resetWithPageSize() {
+			var pageSize = document.getElementById("pageSizer").value;
+			window.location = "student?pageSize=" + pageSize;
+		}
+	</script>
+	<div class="row" style="background-color: #db9c27; padding: 5px;">
+		<div class="col-sm-6"></div>
+		<div class="col-sm-6">
+			<a href="" style="color: #fff;"> NCERT e books</a> &nbsp; <a href=""
+				style="color: #fff;" target="_blank">PTA Registration</a>&nbsp; <a
+				href="" style="color: #fff;" target="_blank">Registration</a>&nbsp;
+			<a href="" style="color: #fff;">Teacher Login </a>&nbsp; <a href=""
+				style="color: #fff;" target="_blank">Student Login</a>&nbsp; <a
+				href="" style="color: #fff;" target="_blank">Staff Login</a>
+		</div>
+	</div>
+
+
+	<div class="navbar">
+		<center>
+			<img src="/dps/images/dps-jaipur-school-logo.png"
+				style="width: 45%; margin-top: -20px;" />
+		</center>
+		<a href="#"><i class="fa fa-fw fa-home"></i> Home</a> <a href="#">About
+			Us</a> <a href="#"> Infrastructure</a> <a class="active" href="">
+			HostelStudent</a> <a href="#"> Admission</a> <a href="#">Academics</a> <a
+			href="#">Result</a> <a href="#">Carrier</a> <a><i
+			class="fa fa-fw fa-search"></i>Search</a>
+	</div>
+	<div class="row">
+		<div class="col-sm-2"></div>
+		<div class="col-sm-8">
+			<h3>
+				<b>Students List</b>
+			</h3>
+			<div class="row">
+				<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10"
+					style="padding-top: 50px;">
+					<caption>
+						Showing page <span th:text="${pageNumber}+1"></span> of <span
+							th:text="${totalPages}"></span> for <span
+							th:text="${ totalElements }"></span> items.
+					</caption>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+					<div class="form-group">
+						<label for="pageSize">Page Size:</label> <select name="pageSize"
+							class="form-control" id="pageSizer"
+							th:onchange="resetWithPageSize()">
+							<option th:each="option : ${pageSizes}" th:text="${option}"
+								th:selected="${option == pageSize}">option</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<table id="customers" class="table table-condensed">
+				<tr>
+					<th>Sl.No</th>
+					<th>Student Name</th>
+					<th>Photo</th>
+					<th>Standard</th>
+					<th>Mobile No.</th>
+					<th colspan="3" class="noPadding"><a type="button"
+						class="btn btn btn-add" href="student/new"
+						style="width: 100%; color: black;">Add Students</a></th>
+					<!-- <th colspan="3" class="noPadding"><a type="button"
+						class="view btn btn btn-add" data-toggle="modal"
+						data-target="#add" style="width: 100%; color: black;">Add
+							Student</a></th> -->
+				</tr>
+				<tr th:each="student, index: ${studentlist}">
+					<td style="text-align: center"
+						th:text="${index.count} + ((${pageNumber})*${pageSize})" />
+					<td style="text-align: center" th:text="${student.name}"
+						th:id="'name' + ${student.id}" />
+					<td><img th:src="@{'/images/' +${student.photosImagePath}}"
+						style="width: 30%;"/></td>
+					<td style=" text-align:
+						center" th:text="${student.standard}"
+						th:id="'standard' + ${student.id}" />
+					<td style="text-align: center" th:text="${student.mobileNo}"
+						th:id="'mobileNo' + ${student.id}" />
+
+					<td class="noPadding"><a type="button"
+						class="view btn btn btn-view" style="width: 100%">View</a></td>
+					<td class="noPadding"><a type="button"
+						class="view btn btn btn-Edit" style="width: 100%">Edit</a></td>
+					<td class="noPadding"><a type="button"
+						class="view btn btn btn-delete" style="width: 100%">Delete</a></td>
+
+				</tr>
+			</table>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="add" role="dialog">
+		<div class="modal-dialog">
+			<!-- Add Content-->
+			<div class="modal-content" style="border-radius: 0px; padding: 0px;">
+				<div class="modal-header"
+					style="background-color: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; border: 1px solid white;">X</button>
+					<h4 class="modal-title"
+						style="background-color: transparent; color: white; text-align: center;">Add
+						Student</h4>
+				</div>
+				<div class="modal-body" style="padding: 50px;">
+					<table class="table table-condensed">
+						<tbody>
+							<tr>
+								<th style="width: 150px;">Name</th>
+								<td><input type="text" required placeholder="Enter name"
+									id="toAddBookName"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Standard</th>
+								<td><input type="text" required
+									placeholder="Enter standard" id="toAddAuthor"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Mobile No</th>
+								<td><input type="text" required
+									placeholder="Enter mobile number" id="toAddYear"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Email</th>
+								<td><input type="text" required placeholder="Enter email"
+									id="toAddEmail"></td>
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+				<div class="modal-footer"
+					style="margin: 0px; padding: 10px; background: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="btn btn-delete btn-add"
+						style="width: 100px; height: 30px;" onclick="add()"
+						data-dismiss="modal">Add</button>
+					<button style="display: none" id="messageModalOpener"
+						data-toggle="modal" data-target="#messageModal">showsuccessMessagge</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+
+
+
+</html>

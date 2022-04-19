@@ -18,7 +18,7 @@ public class BeanValidator {
 		return Validation.buildDefaultValidatorFactory().getValidator();
 	}
 
-	public ArrayList<String> userSignupValidate(Student reqData) {
+	public ArrayList<String> userValidate(Student reqData) {
 		ArrayList<String> arrayList = new ArrayList<>();
 		Set<ConstraintViolation<Student>> constraintViolations = getValidator().validate(reqData);
 		for (ConstraintViolation<Student> constraintViolation : constraintViolations) {
@@ -28,10 +28,14 @@ public class BeanValidator {
 			if (constraintViolation.getPropertyPath().toString().equals("email")) {
 				arrayList.add(constraintViolation.getMessage());
 			}
-			if (constraintViolation.getPropertyPath().toString().equals("mobNo")) {
+			if (constraintViolation.getPropertyPath().toString().equals("mobileNo")) {
+				arrayList.add(constraintViolation.getMessage());
+			}
+			if(constraintViolation.getPropertyPath().toString().equals("standard")) {
 				arrayList.add(constraintViolation.getMessage());
 			}
 		}
+		System.err.println("BeanValidation ErrorList:::"+arrayList);
 		return arrayList;
 	}
 	

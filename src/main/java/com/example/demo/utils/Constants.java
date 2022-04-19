@@ -38,4 +38,17 @@ public class Constants {
 		String saltStr = salt.toString();
 		return saltStr;
 	}
+
+	public static String generateOTP() {
+		Random rnd=new Random();
+		int[] otp=rnd.ints(6,0,9).toArray();
+		StringBuilder sb=new StringBuilder();
+		sb.append(otp[0]);
+		sb.append(otp[1]);
+		sb.append(otp[2]);
+		sb.append(otp[3]);
+		sb.append(otp[4]);
+		sb.append(otp[5]);
+		return sb.toString();
+	}
 }

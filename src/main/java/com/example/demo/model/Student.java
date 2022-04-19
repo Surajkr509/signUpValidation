@@ -1,11 +1,16 @@
 package com.example.demo.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Student {
@@ -14,11 +19,19 @@ public class Student {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
+	@NotEmpty(message = "*Please provide your name")
 	private String name;
+	@NotEmpty(message = "*Please provide your standard")
 	private String standard;
 	private String username;
+	@Column(unique = true)
+	@NotEmpty(message = "*Please provide your email")
 	private String email;
+	@NotEmpty(message="*Please provide your mobileNo")
+	@Size(max = 10,message = "Mobile No. should be 10 digit")
 	private String mobileNo;
+	
+	@NotEmpty(message="*Please provide your password")
 	private String password;
 	
 	@OneToOne
@@ -27,6 +40,10 @@ public class Student {
 	
 	private String createdAt;
 	private String updatedAt;
+	private String otp;
+	
+	@Column(nullable=false,length =64)
+	private String photos;
 	
 	
 	public Long getId() {
@@ -89,8 +106,23 @@ public class Student {
 	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
-	
-
+	public String getOtp() {
+		return otp;
+	}
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+	public String getPhotos() {
+		return photos;
+	}
+	public void setPhotos(String photos) {
+		this.photos = photos;
+	}
+	 @Transient
+	    public String getPhotosImagePath() {
+	        if (photos == null || id == null) return null;
+	         
+	        return + id + "/" + photos;
+	    }
 }
 

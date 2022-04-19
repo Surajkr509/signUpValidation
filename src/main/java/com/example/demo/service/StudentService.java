@@ -1,18 +1,21 @@
 package com.example.demo.service;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.model.Role;
+import com.example.demo.model.FileUploadUtil;
 import com.example.demo.model.Student;
-import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.StudentRepository;
-import com.example.demo.utils.Constants;
 
 @Service
 public class StudentService {
@@ -20,11 +23,12 @@ public class StudentService {
 	@Autowired
 	StudentRepository studentRepository;
 	
-	@Autowired
-	private RoleRepository roleRepository;
 
-	public String add(Student student) {
-		 studentRepository.save(student);
+
+	public String add(Student student,MultipartFile multipartFile) throws IOException {
+		Student savedStudent= studentRepository.save(student);
+		String uploadDir = "src/main/resources/static/images/" + savedStudent.getId();
+		FileUploadUtil.saveFile(uploadDir, student.getPhotos(), multipartFile);
 		 return null;
 	}
 
@@ -60,24 +64,24 @@ public class StudentService {
 			studentRepository.deleteById(id);
 	}
 
-	public Object signUp(Student student) {
-	Role role = roleRepository.findByRole("STUDENT");
-	if(role!=null) {
-		String password=Constants.getRandomPassword();
-		student.setRoleId(role);
-		student.setUsername(student.getEmail());
-		student.setPassword(student.getPassword());
-		student.setCreatedAt(Constants.getDateAndTime());
-		student.setUpdatedAt(Constants.getDateAndTime());
-		studentRepository.save(student);
-		HashMap<String, Object> userData= new HashMap<>();
-		userData.put("username",student.getUsername());
-		userData.put("password", password);
-		return userData;
-	} else {
-		throw new RuntimeException("Role is not exist");
+	public Page<Student> getAll(int pageNumber,int pageSize,String sortBy,String sortDirection) {
+		
+		if(pageNumber==0 || pageNumber<0) 
+			pageNumber=0;
+		if(pageSize==0 || pageSize<0)
+			pageSize=10;
+		if(sortBy==null || sortBy.trim().equals(""))
+			sortBy="id";
+		Sort sort=Sort.by(Direction.ASC,sortBy);
+		if(sortDirection==null || sortDirection.trim().equals("") || sortDirection.trim().equals("desc"))
+			sort=Sort.by(Direction.DESC,sortBy);
+		
+		Pageable pageable=PageRequest.of(pageNumber, pageSize, sort);
+		return studentRepository.findAll(pageable);
+			
 	}
-	}
+
+	
 
 }
 
