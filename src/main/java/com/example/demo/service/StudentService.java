@@ -25,7 +25,15 @@ public class StudentService {
 	
 
 
-	public String add(Student student,MultipartFile multipartFile) throws IOException {
+	public Object add(Student student,MultipartFile multipartFile) throws IOException {
+		Student savedStudent= studentRepository.save(student);
+		String uploadDir = "src/main/resources/static/images/" + savedStudent.getId();
+		FileUploadUtil.saveFile(uploadDir, student.getPhotos(), multipartFile);
+		 return null;
+	}
+	
+//	trying validation
+	public Object adds(Student student,MultipartFile multipartFile) throws IOException {
 		Student savedStudent= studentRepository.save(student);
 		String uploadDir = "src/main/resources/static/images/" + savedStudent.getId();
 		FileUploadUtil.saveFile(uploadDir, student.getPhotos(), multipartFile);
@@ -81,7 +89,20 @@ public class StudentService {
 			
 	}
 
-	
+	public boolean checkName(String name) {
+		Optional<Student> existStudent=studentRepository.findByName(name);
+		return existStudent.isPresent();
+	}
+
+	public boolean checkEmail(String email) {
+		Boolean existStudent = studentRepository.existsByEmail(email);
+		return existStudent;
+	}
+
+	public boolean checkMob(String mobileNo) {
+		boolean existMob=studentRepository.existsByMobileNo(mobileNo);
+		return existMob;
+	}
 
 }
 

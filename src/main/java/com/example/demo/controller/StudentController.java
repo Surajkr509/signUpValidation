@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.demo.bean.ResultDTO;
 import com.example.demo.model.Student;
 import com.example.demo.service.StudentService;
+import com.example.demo.utils.BeanValidator;
 import com.example.demo.utils.Constants;
 
 @Controller
@@ -35,15 +40,61 @@ public class StudentController {
 	StudentService studentService;
 
 	@PostMapping
-	public ModelAndView addStudent(Student student, @RequestParam("image") 
-	MultipartFile multipartFile) throws IOException {
-		 String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-	        student.setPhotos(fileName);
+	public ModelAndView addStudent(Student student, @RequestParam("image") MultipartFile multipartFile)
+			throws IOException {
+
+		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+		student.setPhotos(fileName);
 		student.setPassword(Constants.getRandomPassword());
 		studentService.add(student, multipartFile);
-		
+
 		return this.getStudents(null, null, null, null);
 	}
+
+//	trying validation
+
+	@GetMapping("/addStud")
+	public String goToAddStudents(Student student) {
+		return "addStud";
+	}
+
+	@PostMapping("/addStud")
+	public ModelAndView addStudents(@Valid Student student, BindingResult bindingResult,
+			@RequestParam("image") MultipartFile multipartFile) throws IOException {
+		ModelAndView modelAndView = new ModelAndView();
+
+		try {
+			System.err.println("::: AddSTud ::: ");
+			String name = student.getName();
+			if (name == null) {
+				System.err.println("::: Checking Name ::: ");
+				bindingResult.rejectValue("name", "errors.student.name", "Enter a valid name");
+			}
+			
+			String mobileNo = student.getMobileNo();
+			if (studentService.checkMob(mobileNo) == true) {
+				bindingResult.rejectValue("mobileNo", "errors.student.mobileNo", "Enter mobile No. address already exist");
+			}
+		
+			
+			String email = student.getEmail();
+			if (studentService.checkEmail(email) == true) {
+				bindingResult.rejectValue("email", "errors.student.email", "Enter email address already exist");
+			}
+			String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+			student.setPhotos(fileName);
+			student.setPassword(Constants.getRandomPassword());
+			studentService.adds(student, multipartFile);
+			this.getStudents(null, null, null, null);
+			modelAndView.setViewName("/students");
+			return modelAndView;
+		} catch (Exception e) {
+
+		}
+		modelAndView.setViewName("/addStud");
+		return modelAndView;
+	}
+
 
 //	@PostMapping("/add")
 //	public ResponseEntity<?> add(Student student) {
