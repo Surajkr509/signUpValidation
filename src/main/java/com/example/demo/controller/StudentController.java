@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.bean.ResultDTO;
 import com.example.demo.model.Student;
@@ -39,17 +41,17 @@ public class StudentController {
 	@Autowired
 	StudentService studentService;
 
-	@PostMapping
-	public ModelAndView addStudent(Student student, @RequestParam("image") MultipartFile multipartFile)
-			throws IOException {
-
-		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-		student.setPhotos(fileName);
-		student.setPassword(Constants.getRandomPassword());
-		studentService.add(student, multipartFile);
-
-		return this.getStudents(null, null, null, null);
-	}
+//	@PostMapping
+//	public ModelAndView addStudent(Student student, @RequestParam("image") MultipartFile multipartFile)
+//			throws IOException {
+//
+//		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+//		student.setPhotos(fileName);
+//		student.setPassword(Constants.getRandomPassword());
+//		studentService.add(student, multipartFile);
+//
+//		return this.getStudents(null, null, null, null);
+//	}
 
 //	trying validation
 
@@ -59,9 +61,8 @@ public class StudentController {
 	}
 
 	@PostMapping("/addStud")
-	public ModelAndView addStudents(@Valid Student student, BindingResult bindingResult,
-			@RequestParam("image") MultipartFile multipartFile) throws IOException {
-		ModelAndView modelAndView = new ModelAndView();
+	public Object addStudents(@Valid Student student, BindingResult bindingResult,
+			@RequestParam("image") MultipartFile multipartFile,RedirectAttributes rA) throws IOException {
 
 		try {
 			System.err.println("::: AddSTud ::: ");
@@ -73,7 +74,7 @@ public class StudentController {
 			
 			String mobileNo = student.getMobileNo();
 			if (studentService.checkMob(mobileNo) == true) {
-				bindingResult.rejectValue("mobileNo", "errors.student.mobileNo", "Enter mobile No. address already exist");
+				bindingResult.rejectValue("mobileNo", "errors.student.mobileNo", "Enter mobile no. address already exists");
 			}
 		
 			
@@ -85,14 +86,15 @@ public class StudentController {
 			student.setPhotos(fileName);
 			student.setPassword(Constants.getRandomPassword());
 			studentService.adds(student, multipartFile);
-			this.getStudents(null, null, null, null);
-			modelAndView.setViewName("/students");
-			return modelAndView;
+			rA.addAttribute("pageNumber", null);
+			rA.addAttribute("pageSize", null);
+			rA.addAttribute("sortBy", null);
+			rA.addAttribute("sortDirection", null);
+			return "redirect:/student/getStudents";
 		} catch (Exception e) {
 
 		}
-		modelAndView.setViewName("/addStud");
-		return modelAndView;
+		return "/addStud";
 	}
 
 
@@ -102,19 +104,33 @@ public class StudentController {
 //		student.setPassword(Constants.getRandomPassword());
 //		return ResponseEntity.ok(studentService.add(student));
 //	}
-
-	@GetMapping("/new")
-	public String goToAddStudent() {
-		return "/add-student";
-
-	}
+//
+//	@GetMapping("/new")
+//	public String goToAddStudent() {
+//		return "/add-student";
+//
+//	}
 //	@GetMapping
 //	public List<Student> getAll() {
 //		return studentService.findAll();
 //	}
+	
+	@GetMapping("/view/{id}")
+	public ModelAndView viewStudent(@PathVariable Long id) {
 
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("/viewStud");
+		Student studentdata = studentService.getById(id);
+		if (studentdata == null)
+			return null;
+
+		modelAndView.addObject("studentdetails", studentdata);
+
+		return modelAndView;
+
+	}
 	@GetMapping("/{id}")
-	public Optional<Student> getById(@PathVariable Long id) {
+	public Student getById(@PathVariable Long id) {
 		return studentService.getById(id);
 	}
 
@@ -129,26 +145,24 @@ public class StudentController {
 		studentService.delete(id);
 	}
 
-	@GetMapping
-	public ModelAndView getStudents(@RequestParam(required = false) Integer pageNumber,
+	@GetMapping("/getStudents")
+	public String getStudents(@RequestParam(required = false) Integer pageNumber,
 			@RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String sortBy,
-			@RequestParam(required = false) String sortDirection) {
+			@RequestParam(required = false) String sortDirection,Model modelAndView ) {
 
 		if (pageNumber == null)
 			pageNumber = 0;
 		if (pageSize == null)
 			pageSize = 10;
 
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("/students");
 
 		Page<Student> studentSearchResult = studentService.getAll(pageNumber, pageSize, sortBy, sortDirection);
 		List<Student> studentData = studentSearchResult.getContent();
-		modelAndView.addObject("studentlist", studentData);
-		modelAndView.addObject("pageNumber", studentSearchResult.getNumber());
-		modelAndView.addObject("pageSize", pageSize);
-		modelAndView.addObject("sortBy", sortBy);
-		modelAndView.addObject("sortDirection", sortDirection);
+		modelAndView.addAttribute("studentlist", studentData);
+		modelAndView.addAttribute("pageNumber", studentSearchResult.getNumber());
+		modelAndView.addAttribute("pageSize", pageSize);
+		modelAndView.addAttribute("sortBy", sortBy);
+		modelAndView.addAttribute("sortDirection", sortDirection);
 		List<Integer> pages = new ArrayList<>();
 		List<Integer> pageSizes = new ArrayList<>();
 		pageSizes.add(5);
@@ -159,11 +173,11 @@ public class StudentController {
 		for (int i = 0; i < studentSearchResult.getTotalPages(); i++) {
 			pages.add(i);
 		}
-		modelAndView.addObject("pages", pages);
-		modelAndView.addObject("pageSizes", pageSizes);
-		modelAndView.addObject("totalPages", studentSearchResult.getTotalPages());
-		modelAndView.addObject("totalElements", studentSearchResult.getTotalElements());
-		return modelAndView;
+		modelAndView.addAttribute("pages", pages);
+		modelAndView.addAttribute("pageSizes", pageSizes);
+		modelAndView.addAttribute("totalPages", studentSearchResult.getTotalPages());
+		modelAndView.addAttribute("totalElements", studentSearchResult.getTotalElements());
+		return "/students";
 	}
 
 }

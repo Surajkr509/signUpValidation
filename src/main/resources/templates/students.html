@@ -21,7 +21,7 @@
 <body>
 
 	<script>
-	/* Below function used to add student using ajax through modal view*/
+		/* Below function used to add student using ajax through modal view*/
 		function add(student) {
 			var msg = "Added";
 			$.ajax({
@@ -49,7 +49,7 @@
 		/* Below function used for pagination */
 		function resetWithPageSize() {
 			var pageSize = document.getElementById("pageSizer").value;
-			window.location = "student?pageSize=" + pageSize;
+			window.location = "../student/getStudents?pageSize=" + pageSize;
 		}
 	</script>
 	<div class="row" style="background-color: #db9c27; padding: 5px;">
@@ -110,7 +110,7 @@
 					<th>Standard</th>
 					<th>Mobile No.</th>
 					<th colspan="3" class="noPadding"><a type="button"
-						class="btn btn btn-add" href="student/addStud"
+						class="btn btn btn-add" th:href="@{../student/addStud}"
 						style="width: 100%; color: black;">Add Students</a></th>
 					<!-- <th colspan="3" class="noPadding"><a type="button"
 						class="view btn btn btn-add" data-toggle="modal"
@@ -122,24 +122,40 @@
 						th:text="${index.count} + ((${pageNumber})*${pageSize})" />
 					<td style="text-align: center" th:text="${student.name}"
 						th:id="'name' + ${student.id}" />
-					<td ><img th:src="@{'/images/' +${student.photosImagePath}}"
-						style="width: 30%;"/></td>
-					<td style=" text-align:
-						center" th:text="${student.standard}"
+					<td><img th:src="@{'/images/' +${student.photosImagePath}}"
+						style="width: 30%;" /></td>
+					<td style="text-align: center" th:text="${student.standard}"
 						th:id="'standard' + ${student.id}" />
 					<td style="text-align: center" th:text="${student.mobileNo}"
 						th:id="'mobileNo' + ${student.id}" />
 
 					<td class="noPadding"><a type="button"
-						class="view btn btn btn-view" style="width: 100%">View</a></td>
+						class="view btn btn btn-view" th:href="@{../student/view/{id}(id=${student.id})}" style="width: 100%">View</a></td>
 					<td class="noPadding"><a type="button"
 						class="view btn btn btn-Edit" style="width: 100%">Edit</a></td>
 					<td class="noPadding"><a type="button"
 						class="view btn btn btn-delete" style="width: 100%">Delete</a></td>
+				</tr>
 
+				<tr>
+					<td style="padding: 2px"><a type="button" class="btn btn-view"
+						th:if="${pageNumber > 0}"
+						th:href="@{../student/getStudents?pageNumber={pNo}&pageSize={pSize}&sortBy={sBy}&sortDirection={sDir}(pNo=${pageNumber}-1, pSize=${pageSize}, sBy=${sortBy}, sDir=${sortDirection})}"
+						style="width: 100%"> << Prev</a></td>
+					<td style="padding: 2px; text-align: center;" colspan="5"><a
+						type="button" class="btn pagiBtn" th:each="p: ${pages}"
+						th:text="${p}+1"
+						th:classappend="${p==pageNumber} ? pageCurrent : pagiBtn"
+						th:href="@{../student/getStudents?pageNumber={pNo}&pageSize={pSize}&sortBy={sBy}&sortDirection={sDir}(pNo=${p}, pSize=${pageSize}, sBy=${sortBy}, sDir=${sortDirection})}"></a>
+					</td>
+					<td style="padding: 2px"><a type="button" class="btn btn-view"
+						th:if="${pageNumber < (totalPages - 1)} "
+						th:href="@{../student/getStudents?pageNumber={pNo}&pageSize={pSize}&sortBy={sBy}&sortDirection={sDir}(pNo=${pageNumber}+1, pSize=${pageSize}, sBy=${sortBy}, sDir=${sortDirection})}"
+						style="width: 100%"> Next >> </a></td>
 				</tr>
 			</table>
 		</div>
+		<div class="col-sm-2"></div>
 	</div>
 
 

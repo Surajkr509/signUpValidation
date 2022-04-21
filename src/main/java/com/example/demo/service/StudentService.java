@@ -13,47 +13,47 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.bean.PaginationDTO;
 import com.example.demo.model.FileUploadUtil;
 import com.example.demo.model.Student;
 import com.example.demo.repository.StudentRepository;
 
 @Service
 public class StudentService {
-	
+
 	@Autowired
 	StudentRepository studentRepository;
-	
 
-
-	public Object add(Student student,MultipartFile multipartFile) throws IOException {
-		Student savedStudent= studentRepository.save(student);
+	public Object add(Student student, MultipartFile multipartFile) throws IOException {
+		Student savedStudent = studentRepository.save(student);
 		String uploadDir = "src/main/resources/static/images/" + savedStudent.getId();
 		FileUploadUtil.saveFile(uploadDir, student.getPhotos(), multipartFile);
-		 return null;
+		return null;
 	}
-	
+
 //	trying validation
-	public Object adds(Student student,MultipartFile multipartFile) throws IOException {
-		Student savedStudent= studentRepository.save(student);
+	public Object adds(Student student, MultipartFile multipartFile) throws IOException {
+		Student savedStudent = studentRepository.save(student);
 		String uploadDir = "src/main/resources/static/images/" + savedStudent.getId();
 		FileUploadUtil.saveFile(uploadDir, student.getPhotos(), multipartFile);
-		 return null;
+		return null;
 	}
 
 	public List<Student> findAll() {
 		return studentRepository.findAll();
 	}
 
-	public Optional<Student> getById(Long id) {
-		return studentRepository.findById(id);
+	public Student getById(Long id) {
+		Optional<Student> student= studentRepository.findById(id);
+		return student.isPresent()?student.get():null;
 	}
 
 	public String update(Student student) {
 		System.err.println("Update:::");
-		Optional<Student> existStudent=studentRepository.findById(student.getId());
-		System.out.println("Student ID" +student);
-		if(existStudent.isPresent()) {
-			Student data=existStudent.get();
+		Optional<Student> existStudent = studentRepository.findById(student.getId());
+		System.out.println("Student ID" + student);
+		if (existStudent.isPresent()) {
+			Student data = existStudent.get();
 			data.setName(student.getName());
 			data.setStandard(student.getStandard());
 			data.setEmail(student.getEmail());
@@ -63,34 +63,34 @@ public class StudentService {
 		} else {
 			return "Student not found by ID";
 		}
-		
+
 	}
 
 	public void delete(Long id) {
-		Optional<Student> existStudent=studentRepository.findById(id);
-		if(existStudent.isPresent())
+		Optional<Student> existStudent = studentRepository.findById(id);
+		if (existStudent.isPresent())
 			studentRepository.deleteById(id);
 	}
 
-	public Page<Student> getAll(int pageNumber,int pageSize,String sortBy,String sortDirection) {
-		
-		if(pageNumber==0 || pageNumber<0) 
-			pageNumber=0;
-		if(pageSize==0 || pageSize<0)
-			pageSize=10;
-		if(sortBy==null || sortBy.trim().equals(""))
-			sortBy="id";
-		Sort sort=Sort.by(Direction.ASC,sortBy);
-		if(sortDirection==null || sortDirection.trim().equals("") || sortDirection.trim().equals("desc"))
-			sort=Sort.by(Direction.DESC,sortBy);
-		
-		Pageable pageable=PageRequest.of(pageNumber, pageSize, sort);
+	public Page<Student> getAll(int pageNumber, int pageSize, String sortBy, String sortDirection) {
+
+		if (pageNumber == 0 || pageNumber < 0)
+			pageNumber = 0;
+		if (pageSize == 0 || pageSize < 0)
+			pageSize = 10;
+		if (sortBy == null || sortBy.trim().equals(""))
+			sortBy = "id";
+		Sort sort = Sort.by(Direction.ASC, sortBy);
+		if (sortDirection == null || sortDirection.trim().equals("") || sortDirection.trim().equals("desc"))
+			sort = Sort.by(Direction.DESC, sortBy);
+
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 		return studentRepository.findAll(pageable);
-			
+
 	}
 
 	public boolean checkName(String name) {
-		Optional<Student> existStudent=studentRepository.findByName(name);
+		Optional<Student> existStudent = studentRepository.findByName(name);
 		return existStudent.isPresent();
 	}
 
@@ -100,9 +100,8 @@ public class StudentService {
 	}
 
 	public boolean checkMob(String mobileNo) {
-		boolean existMob=studentRepository.existsByMobileNo(mobileNo);
+		boolean existMob = studentRepository.existsByMobileNo(mobileNo);
 		return existMob;
 	}
 
 }
-
