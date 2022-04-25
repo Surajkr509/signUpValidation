@@ -122,27 +122,62 @@ public class StudentController {
 		modelAndView.setViewName("/viewStud");
 		Student studentdata = studentService.getById(id);
 		if (studentdata == null)
+			/* to pass the getStudents need to add RedirectAttribute and pass all getStudent fields null*/
 			return null;
 
 		modelAndView.addObject("studentdetails", studentdata);
 
 		return modelAndView;
+	}
+	
+	@GetMapping("/edit/{id}")
+	public ModelAndView editStudent(@PathVariable Long id) {
+
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("/editStud");
+		Student studentdata = studentService.getById(id);
+		if (studentdata == null)
+			/* to pass the getStudents need to add RedirectAttribute and pass all getStudent fields null*/
+			return null;
+
+		modelAndView.addObject("studentinfo", studentdata);
+
+		return modelAndView;
 
 	}
+	
+	
+//	@GetMapping("/{id}")
+//	public Student getById(@PathVariable Long id) {
+//		return studentService.getById(id);
+//	}
+    	
+//	@PutMapping("/{id}")
+//	public String update(@PathVariable Long id, @RequestBody Student student) {
+//		student.setId(id);
+//		return studentService.update(student);
+//	}
+	
+	@PostMapping("/update")
+	public String updateStudent(@ModelAttribute Student student,RedirectAttributes rA,@RequestParam("image") MultipartFile multipartFile ) {
+		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+		student.setPhotos(fileName);
+		studentService.update(student,multipartFile);
+		rA.addAttribute("pageNumber", null);
+		rA.addAttribute("pageSize", null);
+		rA.addAttribute("sortBy", null);
+		rA.addAttribute("sortDirection", null);
+		return "redirect:/student/getStudents";
+	}
+
 	@GetMapping("/{id}")
-	public Student getById(@PathVariable Long id) {
-		return studentService.getById(id);
-	}
-
-	@PutMapping("/{id}")
-	public String update(@PathVariable Long id, @RequestBody Student student) {
-		student.setId(id);
-		return studentService.update(student);
-	}
-
-	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id) {
+	public String delete(@PathVariable Long id,RedirectAttributes rA) {
 		studentService.delete(id);
+		rA.addAttribute("pageNumber", null);
+		rA.addAttribute("pageSize", null);
+		rA.addAttribute("sortBy", null);
+		rA.addAttribute("sortDirection", null);
+		return "redirect:/student/getStudents";
 	}
 
 	@GetMapping("/getStudents")

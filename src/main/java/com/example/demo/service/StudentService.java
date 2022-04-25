@@ -48,7 +48,7 @@ public class StudentService {
 		return student.isPresent()?student.get():null;
 	}
 
-	public String update(Student student) {
+	public String update(Student student,MultipartFile multipartFile ) {
 		System.err.println("Update:::");
 		Optional<Student> existStudent = studentRepository.findById(student.getId());
 		System.out.println("Student ID" + student);

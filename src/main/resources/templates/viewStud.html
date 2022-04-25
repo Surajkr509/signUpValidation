@@ -26,6 +26,11 @@
     line-height: 1.5;
     font-family: system-ui;
 }
+.box {
+        width: 30%;
+        height: 200px;
+        border: 5px dashed #f7a239;
+      }
 </style>
 </head>
 <body>
@@ -50,7 +55,6 @@
 							<span class="textlevel">Mobile No.:</span> <span th:text="*{studentdetails.mobileNo}"></span><br>
 						<span class="textlevel">Email:</span> <span th:text="*{studentdetails.email}"></span></h4>
 						</div>
-						<br> <br> <br>
 						<div class="col-sm-3">
 							<img th:src="@{'/images/'+${studentdetails.photosImagePath}}"
 								style="width: 100%;" />
