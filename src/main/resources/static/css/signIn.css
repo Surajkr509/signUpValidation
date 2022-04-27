@@ -30,7 +30,7 @@ overflow-x:hidden;
 .navbar a {
   float: none;
   text-align: center;
-  padding: 12px 35px;
+  padding: 12px 30px;
   color: white;
   text-decoration: none;
   
@@ -544,3 +544,67 @@ overflow-x:hidden;
 }
 
 .header h1 {margin-top: -5px;}
+
+
+/* FOOTER */
+
+
+
+
+
+
+
+.footer{width:100%;float:left;background:#065E3E;}
+
+.foot-social{width:40%;max-width:100%;float:left;margin:0 30%;position:relative;z-index:1;}
+
+.foot-social:before{content:'';position:absolute;left:0;right:40%;top:0;bottom:0;background:#E7E7E7;-webkit-transform:skewX(30deg);-moz-transform:skewX(30deg);-ms-transform:skewX(30deg);-o-transform:skewX(30deg);transform:skewX(30deg);z-index:-1;border-radius:0 0 0px 10px;}
+
+.foot-social:after{content:'';position:absolute;left:40%;right:0;top:0;bottom:0;background:#E7E7E7;-webkit-transform:skewX(-30deg);-moz-transform:skewX(-30deg);-ms-transform:skewX(-30deg);-o-transform:skewX(-30deg);transform:skewX(-30deg);z-index:-1;border-radius:0 0 10px 0px;}
+
+.foot-social ul{width:100%;float:left;padding:10px 5%;text-align:center;}
+
+.foot-social ul li{display:inline-block;vertical-align:top;margin:0 20px;}
+
+.foot-social ul li a{font-size:20px;color:#2B2B2B;}
+
+.foot-social ul li a:hover{color:#0058F4;}
+
+.fa-blog img{width:19px;display:block;}
+
+.footer .first-footer {
+
+
+    width: 100%;float: left;text-align:center;padding:30px 0 20px;border-bottom: 1px solid #065E3E;}
+
+.foot-box.footer-logo{width:25%;}
+
+.footer-logo img{width:130%;display:block;}
+
+.foot-box{display:inline-block;vertical-align:top;margin-right:10%;width:30%;text-align:left;}
+
+.foot-box:last-child{margin-right:0;}
+
+.quick-links{width:auto;}
+
+.foot-box h3{margin-bottom:10px;color:#CDD9F4;}
+
+.foot-box ul li a{color:#fff;margin:5px 0;display:block;}
+
+.foot-box ul li a:hover{color:#588ED7;}
+
+.foot-box p{color:#fff;padding-bottom:10px;}
+
+.foot-box p a{color:#fff;}
+
+.foot-box p a:hover{color:#588ED7;}
+
+.bottom{width:100%;float:left;padding:5px 30px;background:#DB9C27;text-align:center;border-top: 1px solid #DB9C27;}
+
+.bottom p{float:left;color:#fff;font-size:12px;margin-top:7px;}
+
+.ecis{float:right;margin:0px 0px 0px 10px;}
+
+.ecis img{width:25px;height:25px;float:left;}
+
+.ecis p{float:left;margin-top:6px;font-size:12px;}
