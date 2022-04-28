@@ -204,6 +204,8 @@ public class StudentController {
 		pageSizes.add(10);
 		pageSizes.add(15);
 		pageSizes.add(20);
+		pageSizes.add(30);
+		pageSizes.add(50);
 
 		for (int i = 0; i < studentSearchResult.getTotalPages(); i++) {
 			pages.add(i);

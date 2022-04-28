@@ -38,7 +38,7 @@ public class UserExcelExporter {
         createCell(row, 0, "Student ID", style);      
         createCell(row, 1, "Name", style);       
         createCell(row, 2, "Standard", style);    
-        createCell(row, 3, "Role", style);
+        createCell(row, 3, "Email", style);
         createCell(row, 4, "MobileNo", style);
          
     }
